@@ -1,0 +1,34 @@
+{
+  "46053": {
+    "name": "46053 — East Santa Barbara Channel",
+    "desc": "Mid-channel, right on the Santa Barbara → Santa Cruz Island crossing.",
+    "rows": {
+      "1": [["ukmo_seamless",1.52,-0.23],["gem_seamless",1.54,0.19],["ecmwf_ifs025",1.76,0.77],["gfs_seamless",1.89,0.83],["ncep_hrrr_conus",1.89,0.83],["icon_seamless",2.02,-1.34]],
+      "2": [["ukmo_seamless",1.57,-0.20],["gem_seamless",1.61,0.17],["gfs_seamless",1.68,-0.21],["ecmwf_ifs025",1.87,0.91],["icon_seamless",2.07,-1.38]]
+    }
+  },
+  "46054": {
+    "name": "46054 — West Santa Barbara / Pt. Conception",
+    "desc": "The exposed gap-wind side, where northwesterlies accelerate around the point.",
+    "rows": {
+      "1": [["ecmwf_ifs025",1.17,0.26],["gem_seamless",1.34,0.25],["icon_seamless",1.45,-0.25],["ukmo_seamless",1.45,-0.19],["gfs_seamless",1.65,0.82],["ncep_hrrr_conus",1.65,0.82]],
+      "2": [["ecmwf_ifs025",1.31,0.49],["gem_seamless",1.45,0.38],["ukmo_seamless",1.51,0.03],["icon_seamless",1.52,-0.20],["gfs_seamless",1.64,0.81]]
+    }
+  },
+  "46069": {
+    "name": "46069 — South Santa Rosa Island",
+    "desc": "Outer-island side, for anyone continuing past Santa Cruz.",
+    "rows": {
+      "1": [["icon_seamless",1.09,0.08],["gem_seamless",1.11,0.33],["ecmwf_ifs025",1.13,0.43],["ukmo_seamless",1.25,0.38],["gfs_seamless",1.41,0.59],["ncep_hrrr_conus",1.41,0.59]],
+      "2": [["icon_seamless",1.21,0.17],["gem_seamless",1.27,0.47],["ecmwf_ifs025",1.29,0.66],["ukmo_seamless",1.45,0.63],["gfs_seamless",1.52,0.80]]
+    }
+  },
+  "46025": {
+    "name": "46025 — Santa Monica Basin",
+    "desc": "Nearest data for the eastern approach toward Anacapa, from Ventura/Oxnard.",
+    "rows": {
+      "1": [["icon_seamless",1.22,0.03],["ecmwf_ifs025",1.24,0.45],["gem_seamless",1.38,0.61],["ukmo_seamless",1.41,0.63],["gfs_seamless",1.51,0.73],["ncep_hrrr_conus",1.51,0.73]],
+      "2": [["icon_seamless",1.27,0.02],["ecmwf_ifs025",1.32,0.48],["gfs_seamless",1.35,0.29],["gem_seamless",1.44,0.60],["ukmo_seamless",1.46,0.64]]
+    }
+  }
+}

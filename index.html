@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Which wind model? — Channel Islands crossings</title>
+<style>
+  :root{
+    --ocean-deep:#0b2545; --ocean-mid:#13315c; --ocean-light:#1d4873;
+    --land:#d8cfb8; --panel:#f7f5f0; --ink:#0b2545; --muted:#5b7a9a;
+    --accent:#e8702a; --good:#2f7d5e; --line:#c9c2ad;
+    --bg:#eef2f5;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    box-sizing:border-box;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0a1420; --panel:#10233a; --ink:#e8edf2; --muted:#8fa7bd; --line:#24405c;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a1420; --panel:#10233a; --ink:#e8edf2; --muted:#8fa7bd; --line:#24405c;
+  }
+  html{scroll-padding-top:env(safe-area-inset-top,0px); height:100%;}
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100%; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  header{
+    padding:28px 24px 18px; max-width:1100px; margin:0 auto;
+  }
+  h1{font-size:1.5rem; margin:0 0 6px; letter-spacing:-0.01em;}
+  .sub{color:var(--muted); font-size:0.98rem; max-width:62ch; line-height:1.5; margin:0;}
+  main{
+    max-width:1100px; margin:0 auto; padding:0 24px 48px;
+    display:grid; grid-template-columns:1.2fr 1fr; gap:24px;
+  }
+  @media (max-width:820px){ main{grid-template-columns:1fr;} }
+
+  .mapcard{
+    background:linear-gradient(180deg,var(--ocean-light),var(--ocean-deep));
+    border-radius:14px; padding:12px; position:relative; overflow:hidden;
+  }
+  svg{width:100%; height:auto; display:block;}
+  .landmass{fill:var(--land); opacity:0.92;}
+  .island-label{fill:#4a4330; font-size:13px; font-weight:600;}
+  .coast-label{fill:#dfe8f0; font-size:12px; font-weight:600;}
+  .route{stroke:#f7f5f0; stroke-width:1.4; stroke-dasharray:3 5; fill:none; opacity:0.5;}
+
+  .buoy{cursor:pointer;}
+  .buoy circle.ring{fill:none; stroke:var(--accent); stroke-width:2; opacity:0; transform-origin:center;}
+  .buoy.active circle.ring{opacity:1; animation:pulse 1.6s ease-out infinite;}
+  .buoy circle.dot{fill:var(--accent); stroke:#fff; stroke-width:1.5;}
+  .buoy:not(.active) circle.dot{fill:#f2a97a;}
+  .buoy text{fill:#fff; font-size:12px; font-weight:700; paint-order:stroke; stroke:var(--ocean-deep); stroke-width:3px;}
+  @keyframes pulse{
+    0%{opacity:0.9; transform:scale(0.5);}
+    100%{opacity:0; transform:scale(2.6);}
+  }
+
+  .panel{
+    background:var(--panel); border-radius:14px; padding:20px 22px;
+    border:1px solid var(--line);
+  }
+  .panel h2{margin:0 0 2px; font-size:1.15rem;}
+  .panel .loc-desc{color:var(--muted); font-size:0.92rem; margin:0 0 16px;}
+  .today-card{
+    background:rgba(232,112,42,0.08); border:1px solid rgba(232,112,42,0.3);
+    border-radius:10px; padding:14px 16px; margin-bottom:16px;
+  }
+  .today-label{font-size:0.78rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:8px;}
+  .today-row{display:flex; align-items:center; gap:14px;}
+  .today-kts{font-size:1.6rem; font-weight:700; line-height:1;}
+  .today-sub{color:var(--muted); font-size:0.82rem; margin-top:4px;}
+  .hist-label{font-size:0.78rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.03em; margin:4px 0 8px;}
+  .best-badge{
+    display:inline-flex; align-items:center; gap:8px; background:rgba(47,125,94,0.12);
+    color:var(--good); border-radius:8px; padding:8px 12px; font-size:0.92rem; font-weight:600;
+    margin-bottom:16px;
+  }
+  table{width:100%; border-collapse:collapse; font-size:0.88rem;}
+  th,td{text-align:right; padding:7px 6px; border-bottom:1px solid var(--line);}
+  th:first-child, td:first-child{text-align:left;}
+  th{color:var(--muted); font-weight:600; font-size:0.78rem;}
+  tr.best td{font-weight:700;}
+  tr.best td:first-child::after{content:" ★"; color:var(--accent);}
+  .lead-toggle{display:flex; gap:6px; margin-bottom:12px;}
+  .lead-toggle button{
+    border:1px solid var(--line); background:transparent; color:var(--ink);
+    padding:6px 12px; border-radius:7px; font-size:0.85rem; cursor:pointer;
+  }
+  .lead-toggle button.sel{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .note{color:var(--muted); font-size:0.82rem; margin-top:14px; line-height:1.5;}
+  .insight{
+    max-width:1100px; margin:0 auto 8px; padding:0 24px;
+  }
+  .insight p{
+    background:rgba(232,112,42,0.1); border-left:3px solid var(--accent);
+    padding:12px 16px; border-radius:0 8px 8px 0; font-size:0.92rem; line-height:1.5; margin:0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Which wind model should you trust?</h1>
+  <p class="sub">Four NDBC buoys around the Santa Barbara Channel and Channel Islands. Each was validated against years of actual forecasts from six weather models; that proven-best combination updates automatically and drives the live speed + direction pick below. Click a buoy to see both.</p>
+</header>
+
+<div class="insight">
+  <p>The best model isn't the same everywhere: ICON is the <em>least</em> accurate model in the channel itself, but the <em>most</em> accurate at both outer-island buoys — 15–20 miles away.</p>
+</div>
+
+<main>
+  <div class="mapcard">
+    <svg viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Santa Barbara Channel buoys">
+      <!-- mainland coastline (schematic) -->
+      <path class="landmass" d="M -10,-10 L 710,-10 L 710,70 C 600,55 520,95 440,75 C 360,55 300,95 230,80 C 150,65 70,100 -10,85 Z"/>
+      <text class="coast-label" x="330" y="45">Santa Barbara / Ventura coast</text>
+
+      <!-- islands (schematic ellipses) -->
+      <ellipse class="landmass" cx="138" cy="239" rx="46" ry="20" transform="rotate(-8 138 239)"/>
+      <text class="island-label" x="95" y="213">San Miguel Is.</text>
+
+      <ellipse class="landmass" cx="241" cy="277" rx="58" ry="24" transform="rotate(-6 241 277)"/>
+      <text class="island-label" x="200" y="248">Santa Rosa Is.</text>
+
+      <ellipse class="landmass" cx="343" cy="256" rx="78" ry="22" transform="rotate(-4 343 256)"/>
+      <text class="island-label" x="300" y="228">Santa Cruz Is.</text>
+
+      <ellipse class="landmass" cx="488" cy="256" rx="30" ry="12" transform="rotate(-3 488 256)"/>
+      <text class="island-label" x="455" y="235">Anacapa Is.</text>
+
+      <!-- rough crossing routes -->
+      <path class="route" d="M 367,110 L 304,150 L 343,256"/>
+      <path class="route" d="M 367,110 L 488,256"/>
+      <path class="route" d="M 93,110 L 93,149 L 138,239"/>
+
+      <!-- buoys -->
+      <g class="buoy active" data-id="46053" tabindex="0" role="button" aria-label="Buoy 46053">
+        <circle class="ring" cx="304" cy="150" r="10"/>
+        <circle class="dot" cx="304" cy="150" r="7"/>
+        <text x="314" y="146">46053</text>
+      </g>
+      <g class="buoy" data-id="46054" tabindex="0" role="button" aria-label="Buoy 46054">
+        <circle class="ring" cx="93" cy="149" r="10"/>
+        <circle class="dot" cx="93" cy="149" r="7"/>
+        <text x="48" y="140">46054</text>
+      </g>
+      <g class="buoy" data-id="46069" tabindex="0" role="button" aria-label="Buoy 46069">
+        <circle class="ring" cx="187" cy="398" r="10"/>
+        <circle class="dot" cx="187" cy="398" r="7"/>
+        <text x="197" y="415">46069</text>
+      </g>
+      <g class="buoy" data-id="46025" tabindex="0" role="button" aria-label="Buoy 46025">
+        <circle class="ring" cx="596" cy="366" r="10"/>
+        <circle class="dot" cx="596" cy="366" r="7"/>
+        <text x="548" y="383">46025</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="panel">
+    <h2 id="loc-name">—</h2>
+    <p class="loc-desc" id="loc-desc">—</p>
+
+    <div class="lead-toggle">
+      <button data-lead="1" class="sel">1 day out</button>
+      <button data-lead="2">2 days out</button>
+    </div>
+
+    <div class="today-card">
+      <div class="today-label">Today's live pick — <span id="today-date">—</span></div>
+      <svg id="today-chart" viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg"></svg>
+      <div class="today-sub" id="today-sub" style="margin-top:6px;">—</div>
+    </div>
+
+    <div class="hist-label">Year-long backtest (for context)</div>
+    <div class="best-badge" id="best-badge">—</div>
+
+    <table>
+      <thead>
+        <tr><th>Model</th><th>MAE (m/s)</th><th>Bias (m/s)</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+
+    <p class="note">MAE = typical forecast error. Bias: positive means the model tends to over-predict wind, negative means it under-predicts. Based on one year of archived forecasts vs. actual buoy readings.</p>
+  </div>
+</main>
+
+<script>
+const DISPLAY_NAME = {
+  gfs_seamless:"GFS", ecmwf_ifs025:"ECMWF", icon_seamless:"ICON",
+  ukmo_seamless:"UKMO", gem_seamless:"GEM", ncep_hrrr_conus:"HRRR"
+};
+
+// DATA (historical backtest) and TODAYS (live predictions) are now loaded
+// from data/*.json at page load instead of being baked into this file --
+// that's the whole point of the backend: these files get refreshed
+// automatically (daily.yml / monthly.yml) without ever touching this page.
+let DATA = null;
+let TODAYS = null;
+
+
+function polar(cx,cy,bearing,L){
+  const r = bearing*Math.PI/180;
+  return [cx+L*Math.sin(r), cy-L*Math.cos(r)];
+}
+
+function arrowGlyph(cx, cy, fromDeg, uncertainty, L){
+  const toward = (fromDeg + 180) % 360;  // flip "wind FROM" into "blowing toward" for the arrow
+  const e1 = polar(cx,cy,toward-uncertainty,L);
+  const e2 = polar(cx,cy,toward+uncertainty,L);
+  const tip = polar(cx,cy,toward,L-3);
+  return `
+    <path d="M ${cx},${cy} L ${e1[0]},${e1[1]} A ${L},${L} 0 0,1 ${e2[0]},${e2[1]} Z"
+          fill="rgba(232,112,42,0.16)" stroke="var(--accent)" stroke-width="0.5"/>
+    <line x1="${cx}" y1="${cy}" x2="${tip[0]}" y2="${tip[1]}" stroke="var(--accent)" stroke-width="2" marker-end="url(#ah)"/>
+  `;
+}
+
+let currentId = "46053";
+let currentLead = 1;
+
+function renderTodayChart(live){
+  const W=460, H=230, padL=34, padR=10, padT=14, chartH=90, gap=14, arrowRowH=70;
+  const n = live.times.length;
+  const stepX = (W-padL-padR)/(n-1);
+  const maxSpd = Math.max(...live.speed_kts)*1.15;
+  const xAt = i => padL + i*stepX;
+  const yAt = s => padT + chartH - (s/maxSpd)*chartH;
+
+  let svg = `<defs><marker id="ah" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--accent)"/></marker></defs>`;
+
+  const pts = live.speed_kts.map((s,i)=>`${xAt(i)},${yAt(s)}`).join(" L ");
+  svg += `<path d="M ${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  live.speed_kts.forEach((s,i)=>{
+    if(i % 3 === 0){
+      svg += `<text x="${xAt(i)}" y="${yAt(s)-7}" font-size="9.5" fill="var(--ink)" text-anchor="middle">${s}</text>`;
+    }
+  });
+
+  live.times.forEach((t,i)=>{
+    if(i % 3 === 0){
+      svg += `<text x="${xAt(i)}" y="${padT+chartH+13}" font-size="9.5" fill="var(--muted)" text-anchor="middle">${t}</text>`;
+    }
+  });
+
+  const arrowCy = padT + chartH + gap + arrowRowH/2 + 8;
+  live.dir_from_deg.forEach((bearing,i)=>{
+    if(i % 3 === 0){
+      svg += arrowGlyph(xAt(i), arrowCy, bearing, live.unc, 20);
+    }
+  });
+
+  document.getElementById("today-chart").setAttribute("viewBox", `0 0 ${W} ${arrowCy+28}`);
+  document.getElementById("today-chart").innerHTML = svg;
+}
+
+function render(){
+  const d = DATA[currentId];
+  document.getElementById("loc-name").textContent = d.name;
+  document.getElementById("loc-desc").textContent = d.desc;
+
+  const live = TODAYS[currentId][currentLead];
+  document.getElementById("today-date").textContent = `${live.date} (${currentLead}-day out)`;
+  document.getElementById("today-sub").textContent =
+    `Arrow points with the wind; shaded cone = ±${live.unc}° typical error at this spot/lead`;
+  renderTodayChart(live);
+
+  const rows = d.rows[currentLead];
+  const best = rows[0];
+  document.getElementById("best-badge").textContent =
+    `Best here (${currentLead}-day): ${DISPLAY_NAME[best[0]]} — ${best[1]} m/s typical error`;
+
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+  rows.forEach((r,i)=>{
+    const tr = document.createElement("tr");
+    if(i===0) tr.className = "best";
+    const biasStr = (r[2]>0?"+":"") + r[2].toFixed(2);
+    tr.innerHTML = `<td>${DISPLAY_NAME[r[0]]}</td><td>${r[1].toFixed(2)}</td><td>${biasStr}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll(".buoy").forEach(b=>{
+    b.classList.toggle("active", b.dataset.id===currentId);
+  });
+}
+
+document.querySelectorAll(".buoy").forEach(b=>{
+  b.addEventListener("click", ()=>{ currentId = b.dataset.id; render(); });
+  b.addEventListener("keydown", e=>{
+    if(e.key==="Enter"||e.key===" "){ e.preventDefault(); currentId = b.dataset.id; render(); }
+  });
+});
+
+document.querySelectorAll(".lead-toggle button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    currentLead = Number(btn.dataset.lead);
+    document.querySelectorAll(".lead-toggle button").forEach(x=>x.classList.remove("sel"));
+    btn.classList.add("sel");
+    render();
+  });
+});
+
+async function boot(){
+  try{
+    const [backtestRes, liveRes] = await Promise.all([
+      fetch('data/backtest_summary.json'),
+      fetch('data/latest.json'),
+    ]);
+    DATA = await backtestRes.json();
+    const live = await liveRes.json();
+    // reshape {buoy: {label, "1":{...}, "2":{...}}} into {buoy: {1:{...},2:{...}}}
+    TODAYS = {};
+    for(const buoy in live){
+      TODAYS[buoy] = { 1: live[buoy]["1"], 2: live[buoy]["2"] };
+    }
+    render();
+  }catch(e){
+    document.querySelector("main").innerHTML =
+      `<p style="padding:24px;color:var(--muted)">Couldn't load data/*.json. If you're viewing this locally rather than on GitHub Pages, that's expected -- browsers block local file fetches for security. It'll work once pushed to GitHub Pages, or if you run a local web server.</p>`;
+    console.error(e);
+  }
+}
+
+boot();
+</script>
+</body>
+</html>
