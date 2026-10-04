@@ -1,4 +1,4 @@
-name: Monthly weight refit
+name: Monthly history top-up and weight refit
 
 on:
   schedule:
@@ -11,6 +11,7 @@ permissions:
 jobs:
   refit:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
@@ -21,13 +22,17 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Refit blend weights
-        run: python scripts/fit_weights.py
+      - name: Top up history cache (only fetches what's new or missing)
+        run: python -u scripts/build_history.py
 
-      - name: Commit updated weights
+      - name: Refit blend weights from the cache
+        run: python -u scripts/fit_weights.py
+
+      - name: Commit updated data
+        if: always()   # save history progress even if the refit step refuses a bad fit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/model_weights.json
-          git commit -m "Monthly weight refit" || echo "No changes to commit"
+          git add data/history data/model_weights.json
+          git commit -m "Monthly history top-up and weight refit" || echo "No changes to commit"
           git push
