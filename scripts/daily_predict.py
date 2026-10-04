@@ -79,11 +79,17 @@ def main():
             hourly_bearing = bearing_from_uv(u_pred, v_pred)
             day_bearing = float(bearing_from_uv(np.nanmean(u_pred), np.nanmean(v_pred)))
 
-            times_local = [(pd.Timestamp(t) - pd.Timedelta(hours=7)).strftime("%-I%p").lstrip("0")
-                           for t in day_rows["time"]]
+            # Real Pacific time (handles daylight saving; a fixed -7h offset would be
+            # an hour off from November to March).
+            local = day_rows["time"].dt.tz_convert("America/Los_Angeles")
+            times_local = [t.strftime("%-I%p") for t in local]
+            start_label = local.iloc[0].strftime("%a %-I %p")
+            end_label = local.iloc[-1].strftime("%a %-I %p")
 
             output[buoy_id][str(lead_day)] = {
                 "date": str(target_date),
+                "start_label": start_label,   # e.g. "Sun 5 PM" -- first hour shown, Pacific time
+                "end_label": end_label,       # e.g. "Mon 4 PM" -- last hour shown
                 "times": times_local,
                 "speed_kts": [round(float(x), 1) for x in pred_kts],
                 "dir_from_deg": [round(float(x), 0) for x in hourly_bearing],
