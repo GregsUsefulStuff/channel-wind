@@ -14,10 +14,10 @@ import json
 import numpy as np
 import pandas as pd
 
-from common import (BUOYS, MODELS, DIR_MAE_DEG, MS_TO_KNOTS,
+from common import (BUOYS, MODELS, DIR_MAE_DEG, MS_TO_KNOTS, DATA_DIR,
                      to_uv, bearing_from_uv, fetch_live_forecast)
 
-WEIGHTS_PATH = "data/model_weights.json"
+WEIGHTS_PATH = DATA_DIR / "model_weights.json"
 
 
 def main():
@@ -97,10 +97,10 @@ def main():
             })
             print(f"  lead {lead_day} ({target_date}): {pred_kts.mean():.1f} kts, {day_bearing:.0f} deg")
 
-    with open("data/latest.json", "w") as f:
+    with open(DATA_DIR / "latest.json", "w") as f:
         json.dump(output, f, indent=2)
 
-    with open("data/predictions_log.jsonl", "a") as f:
+    with open(DATA_DIR / "predictions_log.jsonl", "a") as f:
         for entry in log_entries:
             f.write(json.dumps(entry) + "\n")
 

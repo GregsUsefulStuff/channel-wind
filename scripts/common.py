@@ -2,9 +2,15 @@
 
 import time
 import datetime as dt
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import requests
+
+# Paths are relative to this file, so scripts work from any folder.
+ROOT = Path(__file__).resolve().parent.parent
+DATA_DIR = ROOT / "data"
+HIST_DIR = DATA_DIR / "history"
 
 MS_TO_KNOTS = 1.94384
 RIDGE_STRENGTH = 0.05
@@ -74,72 +80,76 @@ def fit_ridge(X, y, ridge_strength=RIDGE_STRENGTH):
     return w, intercept
 
 
-def fetch_observations_vector(buoy_id, start, end):
-    url = f"https://erddap.cencoos.org/erddap/tabledap/wmo_{buoy_id}.csv"
-    frames = []
-    cur = start
-    while cur < end:
-        chunk_end = min(cur + dt.timedelta(days=CHUNK_DAYS), end)
-        params_str = (f"time,wind_speed,wind_from_direction&time>={cur.isoformat()}T00:00:00Z"
-                       f"&time<={chunk_end.isoformat()}T00:00:00Z")
-        try:
-            r = requests.get(f"{url}?{params_str}", timeout=60)
-            r.raise_for_status()
-            frames.append(pd.read_csv(pd.io.common.StringIO(r.text), skiprows=[1]))
-        except Exception as e:
-            print(f"    [warn] obs chunk {cur}..{chunk_end} failed: {e}")
-        cur = chunk_end
-        time.sleep(0.3)
-    if not frames:
-        return pd.DataFrame(columns=["time", "obs_speed", "obs_u", "obs_v"])
-    obs = pd.concat(frames, ignore_index=True)
-    obs["time"] = pd.to_datetime(obs["time"], utc=True)
-    obs = obs.rename(columns={"wind_speed": "obs_speed", "wind_from_direction": "obs_dir"})
-    obs = obs[["time", "obs_speed", "obs_dir"]].dropna()
-    obs["time"] = obs["time"].dt.round("h")
-    obs = obs.groupby("time", as_index=False).mean()
-    obs["obs_u"], obs["obs_v"] = to_uv(obs["obs_speed"].to_numpy(), obs["obs_dir"].to_numpy())
-    return obs
+
+# ----------------------------------------------------------------------
+# Network helpers: retry with backoff (free public APIs are sometimes slow,
+# and shared cloud IPs get throttled)
+# ----------------------------------------------------------------------
+
+ERDDAP_BASE = "https://erddap.cencoos.org/erddap/tabledap"
+GRID_ORIGIN = dt.date(2024, 1, 1)   # start of Open-Meteo's Previous Runs archive
+CHUNK_DAYS = 45
 
 
-def fetch_model_history_vector(model, lat, lon, start, end, lead_day):
-    spd_var = f"wind_speed_10m_previous_day{lead_day}"
-    dir_var = f"wind_direction_10m_previous_day{lead_day}"
-    frames = []
-    cur = start
-    while cur < end:
-        chunk_end = min(cur + dt.timedelta(days=CHUNK_DAYS), end)
-        params = {"latitude": lat, "longitude": lon, "start_date": cur.isoformat(),
-                   "end_date": chunk_end.isoformat(), "hourly": f"{spd_var},{dir_var}",
-                   "models": model, "wind_speed_unit": "ms", "timezone": "UTC"}
+class NoRetry(Exception):
+    """A permanent error (bad request) -- retrying won't help."""
+
+
+def _retry(fn, tries=5, base_wait=5, label=""):
+    for attempt in range(tries):
         try:
-            r = requests.get(PREVIOUS_RUNS_URL, params=params, timeout=60)
-            r.raise_for_status()
-            hourly = r.json().get("hourly", {})
-            if hourly and "time" in hourly and spd_var in hourly and dir_var in hourly:
-                frames.append(pd.DataFrame(hourly))
+            return fn()
+        except NoRetry:
+            raise
         except Exception as e:
-            print(f"    [warn] history chunk {cur}..{chunk_end} failed for {model}: {e}")
-        cur = chunk_end
-        time.sleep(0.3)
-    if not frames:
-        return pd.DataFrame(columns=["time", f"{model}_spd", f"{model}_u", f"{model}_v"])
-    fc = pd.concat(frames, ignore_index=True)
-    fc["time"] = pd.to_datetime(fc["time"], utc=True)
-    fc = fc.drop_duplicates(subset="time")
-    fc[spd_var] = pd.to_numeric(fc[spd_var], errors="coerce")
-    fc[dir_var] = pd.to_numeric(fc[dir_var], errors="coerce")
-    u, v = to_uv(fc[spd_var].to_numpy(), fc[dir_var].to_numpy())
-    return pd.DataFrame({"time": fc["time"], f"{model}_spd": fc[spd_var], f"{model}_u": u, f"{model}_v": v})
+            if attempt == tries - 1:
+                raise
+            wait = min(90, base_wait * (2 ** attempt))
+            print(f"    [retry {attempt + 1}/{tries - 1}] {label}: {type(e).__name__} -- waiting {wait}s", flush=True)
+            time.sleep(wait)
+
+
+def fetch_json(url, params, label=""):
+    def go():
+        r = requests.get(url, params=params, timeout=90)
+        if 400 <= r.status_code < 500 and r.status_code != 429:
+            raise NoRetry(f"HTTP {r.status_code}: {r.text[:150]}")
+        r.raise_for_status()
+        return r.json()
+    return _retry(go, label=label)
+
+
+def fetch_csv_text(url, label=""):
+    def go():
+        r = requests.get(url, timeout=90)
+        if r.status_code == 404:      # ERDDAP answers 404 when a range simply has no data
+            return ""
+        if 400 <= r.status_code < 500 and r.status_code != 429:
+            raise NoRetry(f"HTTP {r.status_code}: {r.text[:150]}")
+        r.raise_for_status()
+        return r.text
+    return _retry(go, label=label)
+
+
+def chunk_grid(window_start, window_end):
+    """Fixed 45-day windows aligned to GRID_ORIGIN (so chunk identity is stable as the window slides)."""
+    k = max(0, (window_start - GRID_ORIGIN).days // CHUNK_DAYS)
+    chunks = []
+    while True:
+        s = GRID_ORIGIN + dt.timedelta(days=k * CHUNK_DAYS)
+        if s > window_end:
+            break
+        chunks.append((s, s + dt.timedelta(days=CHUNK_DAYS - 1)))   # inclusive end date
+        k += 1
+    return chunks
 
 
 def fetch_live_forecast(model, lat, lon):
     params = {"latitude": lat, "longitude": lon, "hourly": "wind_speed_10m,wind_direction_10m",
               "models": model, "forecast_days": 3, "wind_speed_unit": "ms", "timezone": "UTC"}
     try:
-        r = requests.get(LIVE_FORECAST_URL, params=params, timeout=60)
-        r.raise_for_status()
-        hourly = r.json().get("hourly", {})
+        data = fetch_json(LIVE_FORECAST_URL, params, label=f"live {model}")
+        hourly = data.get("hourly", {})
         if not hourly or "time" not in hourly or "wind_speed_10m" not in hourly:
             return pd.DataFrame(columns=["time", f"{model}_spd", f"{model}_dir"])
         df = pd.DataFrame(hourly).rename(columns={"wind_speed_10m": f"{model}_spd",
