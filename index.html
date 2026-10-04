@@ -266,7 +266,9 @@ function render(){
   document.getElementById("loc-desc").textContent = d.desc;
 
   const live = TODAYS[currentId][currentLead];
-  document.getElementById("today-date").textContent = `${live.date} (${currentLead}-day out)`;
+  document.getElementById("today-date").textContent = live.start_label
+    ? `${live.start_label} \u2192 ${live.end_label}, Pacific time (${currentLead}-day out)`
+    : `${live.date} (${currentLead}-day out)`;
   document.getElementById("today-sub").textContent =
     `Arrow points with the wind; shaded cone = ±${live.unc}° typical error at this spot/lead`;
   renderTodayChart(live);
