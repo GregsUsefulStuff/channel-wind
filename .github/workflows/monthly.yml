@@ -1,0 +1,33 @@
+name: Monthly weight refit
+
+on:
+  schedule:
+    - cron: "0 10 1 * *"   # 10am UTC on the 1st of each month
+  workflow_dispatch: {}      # adds a manual "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  refit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Refit blend weights
+        run: python scripts/fit_weights.py
+
+      - name: Commit updated weights
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/model_weights.json
+          git commit -m "Monthly weight refit" || echo "No changes to commit"
+          git push
