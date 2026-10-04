@@ -1,5 +1,5 @@
 {
-  "fitted_at": "2026-10-04T21:03:50.902139+00:00",
+  "fitted_at": "2026-10-04T22:00:40.202719+00:00",
   "buoys": {
     "46053": {
       "1": {
@@ -12,32 +12,32 @@
           "ncep_hrrr_conus"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.05925851414380585,
-          "ecmwf_ifs025": 0.15224348752531003,
-          "icon_seamless": 0.01796950602961074,
-          "ukmo_seamless": 0.24509484139728166,
-          "gem_seamless": 0.185997272452336,
-          "ncep_hrrr_conus": 0.058801917961186334
+          "gfs_seamless": 0.05925851414397198,
+          "ecmwf_ifs025": 0.15224348752531203,
+          "icon_seamless": 0.01796950602961191,
+          "ukmo_seamless": 0.24509484139728058,
+          "gem_seamless": 0.18599727245233666,
+          "ncep_hrrr_conus": 0.05880191796101773
         },
-        "speed_intercept": 1.0317989724173278,
+        "speed_intercept": 1.0317989724173287,
         "dir_weights_u": {
-          "gfs_seamless": 0.05613215273313333,
-          "ecmwf_ifs025": 0.14606987943917324,
-          "icon_seamless": 0.15044776316499794,
-          "ukmo_seamless": 0.2566429003338603,
-          "gem_seamless": 0.20500996361226262,
-          "ncep_hrrr_conus": 0.05580934258725532
+          "gfs_seamless": 0.05613215273392985,
+          "ecmwf_ifs025": 0.1460698794391579,
+          "icon_seamless": 0.15044776316499683,
+          "ukmo_seamless": 0.25664290033385584,
+          "gem_seamless": 0.2050099636122885,
+          "ncep_hrrr_conus": 0.05580934258645414
         },
-        "dir_intercept_u": 0.5616821767714875,
+        "dir_intercept_u": 0.5616821767714946,
         "dir_weights_v": {
-          "gfs_seamless": 0.12761635139431501,
-          "ecmwf_ifs025": -0.11399623247031607,
-          "icon_seamless": 0.03459588238419311,
-          "ukmo_seamless": 0.20323088129236896,
-          "gem_seamless": 0.2714397183840025,
-          "ncep_hrrr_conus": 0.12762506830442993
+          "gfs_seamless": 0.12761635139426852,
+          "ecmwf_ifs025": -0.11399623247032306,
+          "icon_seamless": 0.03459588238419433,
+          "ukmo_seamless": 0.20323088129236402,
+          "gem_seamless": 0.2714397183840127,
+          "ncep_hrrr_conus": 0.12762506830447687
         },
-        "dir_intercept_v": 0.5179924950246583,
+        "dir_intercept_v": 0.517992495024656,
         "n_hours": 11365,
         "stale": false,
         "history_through": "2026-09-30"
@@ -51,29 +51,29 @@
           "gem_seamless"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.0685816747777931,
-          "ecmwf_ifs025": 0.19083058757511118,
-          "icon_seamless": 0.026264525442098556,
-          "ukmo_seamless": 0.26395598860476877,
-          "gem_seamless": 0.17846705836505478
+          "gfs_seamless": 0.06858167477779115,
+          "ecmwf_ifs025": 0.19083058757511168,
+          "icon_seamless": 0.02626452544210159,
+          "ukmo_seamless": 0.2639559886047689,
+          "gem_seamless": 0.17846705836505294
         },
-        "speed_intercept": 1.0872257527874774,
+        "speed_intercept": 1.0872257527874822,
         "dir_weights_u": {
-          "gfs_seamless": 0.02087802785560553,
-          "ecmwf_ifs025": 0.1932040379068079,
-          "icon_seamless": 0.14671650869079303,
-          "ukmo_seamless": 0.2767421879472477,
-          "gem_seamless": 0.25097666993867174
+          "gfs_seamless": 0.02087802785561496,
+          "ecmwf_ifs025": 0.19320403790681456,
+          "icon_seamless": 0.1467165086907928,
+          "ukmo_seamless": 0.27674218794725053,
+          "gem_seamless": 0.25097666993865286
         },
-        "dir_intercept_u": 0.4507869323225284,
+        "dir_intercept_u": 0.45078693232252753,
         "dir_weights_v": {
-          "gfs_seamless": 0.15443305346731448,
-          "ecmwf_ifs025": -0.06313806314819846,
-          "icon_seamless": 0.05421594348847789,
-          "ukmo_seamless": 0.1882149958051927,
-          "gem_seamless": 0.3014310049817329
+          "gfs_seamless": 0.15443305346732086,
+          "ecmwf_ifs025": -0.06313806314819989,
+          "icon_seamless": 0.05421594348847738,
+          "ukmo_seamless": 0.18821499580519552,
+          "gem_seamless": 0.3014310049817248
         },
-        "dir_intercept_v": 0.6407440057403638,
+        "dir_intercept_v": 0.6407440057403607,
         "n_hours": 12107,
         "stale": false,
         "history_through": "2026-09-30"
@@ -90,32 +90,32 @@
           "ncep_hrrr_conus"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.10135739830585264,
-          "ecmwf_ifs025": 0.3531720714915219,
-          "icon_seamless": 0.09619662044483202,
-          "ukmo_seamless": 0.10077963425486708,
-          "gem_seamless": 0.1785861485157463,
-          "ncep_hrrr_conus": 0.10188054900237145
+          "gfs_seamless": 0.10135739830586227,
+          "ecmwf_ifs025": 0.3531720714915203,
+          "icon_seamless": 0.09619662044485838,
+          "ukmo_seamless": 0.1007796342548791,
+          "gem_seamless": 0.17858614851570906,
+          "ncep_hrrr_conus": 0.10188054900236453
         },
-        "speed_intercept": 0.17342725759192756,
+        "speed_intercept": 0.173427257591932,
         "dir_weights_u": {
-          "gfs_seamless": 0.07320020717258541,
-          "ecmwf_ifs025": 0.21934463982046526,
-          "icon_seamless": 0.23136632093779197,
-          "ukmo_seamless": 0.20541654865287862,
-          "gem_seamless": 0.2042342806016064,
-          "ncep_hrrr_conus": 0.07586537827868269
+          "gfs_seamless": 0.07320020717242015,
+          "ecmwf_ifs025": 0.21934463982044353,
+          "icon_seamless": 0.23136632093779982,
+          "ukmo_seamless": 0.20541654865286746,
+          "gem_seamless": 0.20423428060162258,
+          "ncep_hrrr_conus": 0.07586537827885632
         },
-        "dir_intercept_u": -0.038319576072693984,
+        "dir_intercept_u": -0.03831957607269132,
         "dir_weights_v": {
-          "gfs_seamless": 0.07740933373574231,
-          "ecmwf_ifs025": 0.35648009300063754,
-          "icon_seamless": 0.05215415246246729,
-          "ukmo_seamless": 0.13966136058606032,
-          "gem_seamless": 0.17383197500745348,
-          "ncep_hrrr_conus": 0.08161225867304515
+          "gfs_seamless": 0.07740933373545834,
+          "ecmwf_ifs025": 0.35648009300067185,
+          "icon_seamless": 0.05215415246246847,
+          "ukmo_seamless": 0.1396613605860644,
+          "gem_seamless": 0.17383197500740974,
+          "ncep_hrrr_conus": 0.08161225867333283
         },
-        "dir_intercept_v": -0.19099778965594583,
+        "dir_intercept_v": -0.19099778965594139,
         "n_hours": 11248,
         "stale": false,
         "history_through": "2026-10-02"
@@ -129,29 +129,29 @@
           "gem_seamless"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.12865118822655774,
-          "ecmwf_ifs025": 0.3525444933138968,
-          "icon_seamless": 0.13919122240008333,
-          "ukmo_seamless": 0.13220179982161734,
-          "gem_seamless": 0.18309189740895815
+          "gfs_seamless": 0.12865118822656071,
+          "ecmwf_ifs025": 0.35254449331389237,
+          "icon_seamless": 0.13919122240010207,
+          "ukmo_seamless": 0.1322017998216156,
+          "gem_seamless": 0.1830918974089439
         },
-        "speed_intercept": 0.17099079514529603,
+        "speed_intercept": 0.17099079514529958,
         "dir_weights_u": {
-          "gfs_seamless": 0.13737191444376837,
-          "ecmwf_ifs025": 0.286113314033705,
-          "icon_seamless": 0.24386442777270897,
-          "ukmo_seamless": 0.14796199358971904,
-          "gem_seamless": 0.21249860153363637
+          "gfs_seamless": 0.13737191444377583,
+          "ecmwf_ifs025": 0.28611331403371687,
+          "icon_seamless": 0.2438644277726976,
+          "ukmo_seamless": 0.1479619935897227,
+          "gem_seamless": 0.21249860153362385
         },
-        "dir_intercept_u": -0.19033419329783463,
+        "dir_intercept_u": -0.19033419329783996,
         "dir_weights_v": {
-          "gfs_seamless": 0.08552336903376286,
-          "ecmwf_ifs025": 0.35793568075479376,
-          "icon_seamless": 0.09285756546007139,
-          "ukmo_seamless": 0.14301954366030098,
-          "gem_seamless": 0.2084134926486196
+          "gfs_seamless": 0.08552336903374198,
+          "ecmwf_ifs025": 0.35793568075479176,
+          "icon_seamless": 0.09285756546006632,
+          "ukmo_seamless": 0.14301954366029904,
+          "gem_seamless": 0.20841349264864825
         },
-        "dir_intercept_v": -0.08162258603210626,
+        "dir_intercept_v": -0.08162258603211692,
         "n_hours": 11941,
         "stale": false,
         "history_through": "2026-10-02"
@@ -168,32 +168,32 @@
           "ncep_hrrr_conus"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.06557117889945632,
-          "ecmwf_ifs025": 0.18691311444960557,
-          "icon_seamless": 0.2256867495643471,
-          "ukmo_seamless": 0.180028909503609,
-          "gem_seamless": 0.16384109478453884,
-          "ncep_hrrr_conus": 0.06505571746010783
+          "gfs_seamless": 0.06557117889976556,
+          "ecmwf_ifs025": 0.1869131144496244,
+          "icon_seamless": 0.22568674956436022,
+          "ukmo_seamless": 0.1800289095036073,
+          "gem_seamless": 0.1638410947845071,
+          "ncep_hrrr_conus": 0.06505571745979884
         },
-        "speed_intercept": 0.4655355548385751,
+        "speed_intercept": 0.4655355548385858,
         "dir_weights_u": {
-          "gfs_seamless": 0.05945047654958865,
-          "ecmwf_ifs025": 0.27411865224969034,
-          "icon_seamless": 0.1863766954352674,
-          "ukmo_seamless": 0.29252109729839454,
-          "gem_seamless": 0.08129537943106148,
-          "ncep_hrrr_conus": 0.0602685194321933
+          "gfs_seamless": 0.059450476549362245,
+          "ecmwf_ifs025": 0.27411865224968096,
+          "icon_seamless": 0.18637669543528443,
+          "ukmo_seamless": 0.29252109729838105,
+          "gem_seamless": 0.08129537943106081,
+          "ncep_hrrr_conus": 0.06026851943242899
         },
-        "dir_intercept_u": 0.08525365860986867,
+        "dir_intercept_u": 0.08525365860986511,
         "dir_weights_v": {
-          "gfs_seamless": 0.048513461471190344,
-          "ecmwf_ifs025": 0.20698513658884402,
-          "icon_seamless": 0.2792319907078107,
-          "ukmo_seamless": 0.1457805551156247,
-          "gem_seamless": 0.13362250765514935,
-          "ncep_hrrr_conus": 0.044171590125898816
+          "gfs_seamless": 0.04851346147061038,
+          "ecmwf_ifs025": 0.20698513658884296,
+          "icon_seamless": 0.2792319907078231,
+          "ukmo_seamless": 0.14578055511563418,
+          "gem_seamless": 0.13362250765512285,
+          "ncep_hrrr_conus": 0.04417159012648354
         },
-        "dir_intercept_v": -0.12566472803170115,
+        "dir_intercept_v": -0.1256647280317078,
         "n_hours": 11465,
         "stale": false,
         "history_through": "2026-10-02"
@@ -207,29 +207,29 @@
           "gem_seamless"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.042201294623025326,
-          "ecmwf_ifs025": 0.24325852824886207,
-          "icon_seamless": 0.24820520064744597,
-          "ukmo_seamless": 0.17636821560771343,
-          "gem_seamless": 0.1688196266802308
+          "gfs_seamless": 0.04220129462302639,
+          "ecmwf_ifs025": 0.2432585282488552,
+          "icon_seamless": 0.2482052006474377,
+          "ukmo_seamless": 0.17636821560770705,
+          "gem_seamless": 0.1688196266802524
         },
-        "speed_intercept": 0.455449401800311,
+        "speed_intercept": 0.455449401800303,
         "dir_weights_u": {
-          "gfs_seamless": 0.12210686097464225,
-          "ecmwf_ifs025": 0.2855219984321374,
-          "icon_seamless": 0.20084317437119376,
-          "ukmo_seamless": 0.22033622132389563,
-          "gem_seamless": 0.14505885333918622
+          "gfs_seamless": 0.12210686097464489,
+          "ecmwf_ifs025": 0.2855219984321272,
+          "icon_seamless": 0.20084317437120738,
+          "ukmo_seamless": 0.2203362213238695,
+          "gem_seamless": 0.1450588533392092
         },
-        "dir_intercept_u": -0.12229817394590548,
+        "dir_intercept_u": -0.1222981739458966,
         "dir_weights_v": {
-          "gfs_seamless": 0.07695019363367839,
-          "ecmwf_ifs025": 0.2253257517932562,
-          "icon_seamless": 0.2445824621791862,
-          "ukmo_seamless": 0.17767980393103053,
-          "gem_seamless": 0.1300826164123442
+          "gfs_seamless": 0.07695019363367298,
+          "ecmwf_ifs025": 0.22532575179325334,
+          "icon_seamless": 0.2445824621791808,
+          "ukmo_seamless": 0.1776798039310379,
+          "gem_seamless": 0.13008261641234994
         },
-        "dir_intercept_v": -0.027694962303400406,
+        "dir_intercept_v": -0.027694962303405735,
         "n_hours": 12198,
         "stale": false,
         "history_through": "2026-10-02"
@@ -246,32 +246,32 @@
           "ncep_hrrr_conus"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.06226325575427858,
-          "ecmwf_ifs025": 0.15915393681552056,
-          "icon_seamless": 0.23886403101296572,
-          "ukmo_seamless": 0.11149640089428937,
-          "gem_seamless": 0.08469949885528547,
-          "ncep_hrrr_conus": 0.06324350076257029
+          "gfs_seamless": 0.0622632557541555,
+          "ecmwf_ifs025": 0.15915393681551282,
+          "icon_seamless": 0.23886403101296771,
+          "ukmo_seamless": 0.11149640089428908,
+          "gem_seamless": 0.08469949885529039,
+          "ncep_hrrr_conus": 0.06324350076269518
         },
-        "speed_intercept": 0.681407182919489,
+        "speed_intercept": 0.6814071829194863,
         "dir_weights_u": {
-          "gfs_seamless": 0.05019213717768544,
-          "ecmwf_ifs025": 0.17123156632780417,
-          "icon_seamless": 0.3000180888788323,
-          "ukmo_seamless": 0.15057016744911772,
-          "gem_seamless": 0.05380127240883313,
-          "ncep_hrrr_conus": 0.050301447953309056
+          "gfs_seamless": 0.05019213717735176,
+          "ecmwf_ifs025": 0.17123156632780787,
+          "icon_seamless": 0.30001808887884096,
+          "ukmo_seamless": 0.1505701674491093,
+          "gem_seamless": 0.05380127240883079,
+          "ncep_hrrr_conus": 0.050301447953642615
         },
-        "dir_intercept_u": 0.0641510738861073,
+        "dir_intercept_u": 0.06415107388610353,
         "dir_weights_v": {
-          "gfs_seamless": 0.05433831094468325,
-          "ecmwf_ifs025": 0.2868473139037249,
-          "icon_seamless": 0.23444856839913206,
-          "ukmo_seamless": 0.12080201287148935,
-          "gem_seamless": 0.09501967613994704,
-          "ncep_hrrr_conus": 0.054320485558311114
+          "gfs_seamless": 0.05433831094468223,
+          "ecmwf_ifs025": 0.2868473139037176,
+          "icon_seamless": 0.2344485683991317,
+          "ukmo_seamless": 0.12080201287148976,
+          "gem_seamless": 0.0950196761399503,
+          "ncep_hrrr_conus": 0.0543204855583154
         },
-        "dir_intercept_v": 0.050750260194530605,
+        "dir_intercept_v": 0.05075026019453022,
         "n_hours": 11251,
         "stale": false,
         "history_through": "2026-10-02"
@@ -285,29 +285,29 @@
           "gem_seamless"
         ],
         "speed_weights": {
-          "gfs_seamless": 0.1714995549989288,
-          "ecmwf_ifs025": 0.1479751791091867,
-          "icon_seamless": 0.211727484374909,
-          "ukmo_seamless": 0.1058393916189942,
-          "gem_seamless": 0.11713116693793445
+          "gfs_seamless": 0.17149955499893166,
+          "ecmwf_ifs025": 0.14797517910918997,
+          "icon_seamless": 0.21172748437490901,
+          "ukmo_seamless": 0.10583939161899836,
+          "gem_seamless": 0.11713116693792341
         },
-        "speed_intercept": 0.6319412501804864,
+        "speed_intercept": 0.6319412501804895,
         "dir_weights_u": {
-          "gfs_seamless": 0.14061336020958734,
-          "ecmwf_ifs025": 0.1499026816136622,
-          "icon_seamless": 0.27335064762438144,
-          "ukmo_seamless": 0.14295887989637587,
-          "gem_seamless": 0.09867070042415543
+          "gfs_seamless": 0.14061336020959114,
+          "ecmwf_ifs025": 0.14990268161366974,
+          "icon_seamless": 0.27335064762437633,
+          "ukmo_seamless": 0.14295887989637826,
+          "gem_seamless": 0.09867070042414695
         },
-        "dir_intercept_u": -0.00787775162220572,
+        "dir_intercept_u": -0.007877751622208384,
         "dir_weights_v": {
-          "gfs_seamless": 0.10362887800114978,
-          "ecmwf_ifs025": 0.26976821237733073,
-          "icon_seamless": 0.24518393332508118,
-          "ukmo_seamless": 0.11841942088639346,
-          "gem_seamless": 0.12331639348965952
+          "gfs_seamless": 0.10362887800114763,
+          "ecmwf_ifs025": 0.2697682123773324,
+          "icon_seamless": 0.2451839333250829,
+          "ukmo_seamless": 0.11841942088639217,
+          "gem_seamless": 0.12331639348965992
         },
-        "dir_intercept_v": 0.10342175884679045,
+        "dir_intercept_v": 0.10342175884679033,
         "n_hours": 11843,
         "stale": false,
         "history_through": "2026-10-02"
