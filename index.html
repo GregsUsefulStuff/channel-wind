@@ -197,16 +197,23 @@ function renderTodayChart(live){
   const W=460, H=230, padL=34, padR=10, padT=14, chartH=90, gap=14, arrowRowH=70;
   const n = live.times.length;
   const stepX = (W-padL-padR)/(n-1);
-  const maxSpd = Math.max(...live.speed_kts)*1.15;
+  const known = live.speed_kts.filter(Number.isFinite);
+  const maxSpd = (known.length ? Math.max(...known) : 1)*1.15;
   const xAt = i => padL + i*stepX;
   const yAt = s => padT + chartH - (s/maxSpd)*chartH;
 
   let svg = `<defs><marker id="ah" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="var(--accent)"/></marker></defs>`;
 
-  const pts = live.speed_kts.map((s,i)=>`${xAt(i)},${yAt(s)}`).join(" L ");
-  svg += `<path d="M ${pts}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  // Draw the line in pieces so an hour with no data (null) leaves a gap instead of
+  // plunging to zero.
+  let d = "", pen = false;
   live.speed_kts.forEach((s,i)=>{
-    if(i % 3 === 0){
+    if(Number.isFinite(s)){ d += (pen ? " L " : " M ") + `${xAt(i)},${yAt(s)}`; pen = true; }
+    else { pen = false; }
+  });
+  svg += `<path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+  live.speed_kts.forEach((s,i)=>{
+    if(i % 3 === 0 && Number.isFinite(s)){
       svg += `<text x="${xAt(i)}" y="${yAt(s)-7}" font-size="9.5" fill="var(--ink)" text-anchor="middle">${s}</text>`;
     }
   });
@@ -219,7 +226,7 @@ function renderTodayChart(live){
 
   const arrowCy = padT + chartH + gap + arrowRowH/2 + 8;
   live.dir_from_deg.forEach((bearing,i)=>{
-    if(i % 3 === 0){
+    if(i % 3 === 0 && Number.isFinite(bearing)){
       svg += arrowGlyph(xAt(i), arrowCy, bearing, live.unc, 20);
     }
   });

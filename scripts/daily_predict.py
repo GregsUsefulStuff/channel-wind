@@ -20,6 +20,24 @@ from common import (BUOYS, MODELS, DIR_MAE_DEG, MS_TO_KNOTS, DATA_DIR,
 WEIGHTS_PATH = DATA_DIR / "model_weights.json"
 
 
+def fill_with_hour_mean(df):
+    """df: rows = hours, columns = models. A model with no value for an hour gets the
+    average of the OTHER models for that hour -- instead of being treated as zero,
+    which would drag that hour's speed down and skew its direction."""
+    hour_mean = df.mean(axis=1)                       # averages only the models that have data
+    return df.apply(lambda col: col.fillna(hour_mean))
+
+
+def model_column(day_rows, name):
+    return day_rows[name] if name in day_rows.columns else pd.Series(np.nan, index=day_rows.index)
+
+
+def clean(x, digits):
+    """Round for output; anything not a real number becomes null (never an invalid NaN in the JSON)."""
+    x = float(x)
+    return round(x, digits) if np.isfinite(x) else None
+
+
 def main():
     with open(WEIGHTS_PATH) as f:
         weights = json.load(f)
@@ -57,26 +75,25 @@ def main():
 
             # ---- speed ----
             speed_method = cfg["speed_method"][lead_day]
-            present = [m for m in usable if f"{m}_spd" in day_rows.columns and day_rows[f"{m}_spd"].notna().any()]
+            spd = fill_with_hour_mean(pd.DataFrame(
+                {m: model_column(day_rows, f"{m}_spd") for m in usable}, index=day_rows.index))
             if speed_method == "fitted_blend":
-                pred_speed = sum(day_rows[f"{m}_spd"].fillna(0) * w["speed_weights"][m] for m in present) \
-                    + w["speed_intercept"]
+                pred_speed = sum(spd[m] * w["speed_weights"][m] for m in usable) + w["speed_intercept"]
             else:
-                pred_speed = day_rows[[f"{m}_spd" for m in present]].mean(axis=1)
+                pred_speed = spd.mean(axis=1)
             pred_kts = pred_speed * MS_TO_KNOTS
 
             # ---- direction (always fitted vector blend) ----
-            u_pred = np.zeros(len(day_rows))
-            v_pred = np.zeros(len(day_rows))
-            for m in present:
-                if f"{m}_dir" not in day_rows.columns or not day_rows[f"{m}_dir"].notna().any():
-                    continue
-                u_m, v_m = to_uv(day_rows[f"{m}_spd"].to_numpy(), day_rows[f"{m}_dir"].to_numpy())
-                u_pred = u_pred + np.nan_to_num(u_m) * w["dir_weights_u"][m]
-                v_pred = v_pred + np.nan_to_num(v_m) * w["dir_weights_v"][m]
-            u_pred = u_pred + w["dir_intercept_u"]
-            v_pred = v_pred + w["dir_intercept_v"]
-            hourly_bearing = bearing_from_uv(u_pred, v_pred)
+            U = pd.DataFrame(index=day_rows.index)
+            V = pd.DataFrame(index=day_rows.index)
+            for m in usable:
+                u_m, v_m = to_uv(model_column(day_rows, f"{m}_spd").to_numpy(dtype=float),
+                                 model_column(day_rows, f"{m}_dir").to_numpy(dtype=float))
+                U[m], V[m] = u_m, v_m
+            U, V = fill_with_hour_mean(U), fill_with_hour_mean(V)
+            u_pred = sum(U[m] * w["dir_weights_u"][m] for m in usable) + w["dir_intercept_u"]
+            v_pred = sum(V[m] * w["dir_weights_v"][m] for m in usable) + w["dir_intercept_v"]
+            hourly_bearing = bearing_from_uv(u_pred.to_numpy(), v_pred.to_numpy())
             day_bearing = float(bearing_from_uv(np.nanmean(u_pred), np.nanmean(v_pred)))
 
             # Real Pacific time (handles daylight saving; a fixed -7h offset would be
@@ -91,20 +108,20 @@ def main():
                 "start_label": start_label,   # e.g. "Sun 5 PM" -- first hour shown, Pacific time
                 "end_label": end_label,       # e.g. "Mon 4 PM" -- last hour shown
                 "times": times_local,
-                "speed_kts": [round(float(x), 1) for x in pred_kts],
-                "dir_from_deg": [round(float(x), 0) for x in hourly_bearing],
+                "speed_kts": [clean(x, 1) for x in pred_kts],
+                "dir_from_deg": [clean(x, 0) for x in hourly_bearing],
                 "unc": DIR_MAE_DEG[buoy_id][lead_day],
             }
 
             log_entries.append({
                 "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "buoy": buoy_id, "lead_day": lead_day, "target_date": str(target_date),
-                "avg_kts": round(float(pred_kts.mean()), 1), "dir_deg": round(day_bearing, 0),
+                "avg_kts": clean(np.nanmean(pred_kts), 1), "dir_deg": clean(day_bearing, 0),
             })
-            print(f"  lead {lead_day} ({target_date}): {pred_kts.mean():.1f} kts, {day_bearing:.0f} deg")
+            print(f"  lead {lead_day} ({target_date}): {np.nanmean(pred_kts):.1f} kts, {day_bearing:.0f} deg")
 
     with open(DATA_DIR / "latest.json", "w") as f:
-        json.dump(output, f, indent=2)
+        json.dump(output, f, indent=2, allow_nan=False)
 
     with open(DATA_DIR / "predictions_log.jsonl", "a") as f:
         for entry in log_entries:
