@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Which wind model? — Channel Islands crossings</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 <style>
   :root{
     --ocean-deep:#0b2545; --ocean-mid:#13315c; --ocean-light:#1d4873;
@@ -40,25 +42,31 @@
   @media (max-width:820px){ main{grid-template-columns:1fr;} }
 
   .mapcard{
-    background:linear-gradient(180deg,var(--ocean-light),var(--ocean-deep));
-    border-radius:14px; padding:12px; position:relative; overflow:hidden;
+    border-radius:14px; overflow:hidden; border:1px solid var(--line);
+    background:var(--panel); align-self:start;
   }
-  svg{width:100%; height:auto; display:block;}
-  .landmass{fill:var(--land); opacity:0.92;}
-  .island-label{fill:#4a4330; font-size:13px; font-weight:600;}
-  .coast-label{fill:#dfe8f0; font-size:12px; font-weight:600;}
-  .route{stroke:#f7f5f0; stroke-width:1.4; stroke-dasharray:3 5; fill:none; opacity:0.5;}
+  #map{height:520px; width:100%; background:#cfe3ee;}
+  @media (max-width:820px){ #map{height:400px;} }
+  .map-caption{font-size:0.8rem; color:var(--muted); padding:10px 14px; line-height:1.45;}
+  #today-chart{width:100%; height:auto; display:block;}
 
-  .buoy{cursor:pointer;}
-  .buoy circle.ring{fill:none; stroke:var(--accent); stroke-width:2; opacity:0; transform-origin:center;}
-  .buoy.active circle.ring{opacity:1; animation:pulse 1.6s ease-out infinite;}
-  .buoy circle.dot{fill:var(--accent); stroke:#fff; stroke-width:1.5;}
-  .buoy:not(.active) circle.dot{fill:#f2a97a;}
-  .buoy text{fill:#fff; font-size:12px; font-weight:700; paint-order:stroke; stroke:var(--ocean-deep); stroke-width:3px;}
-  @keyframes pulse{
-    0%{opacity:0.9; transform:scale(0.5);}
-    100%{opacity:0; transform:scale(2.6);}
-  }
+  /* wind markers on the map */
+  .wm{display:flex; flex-direction:column; align-items:center; width:76px; cursor:pointer;}
+  .wm svg.arrow{width:38px; height:38px; display:block; overflow:visible;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.5)); transition:transform .35s;}
+  .wm svg.arrow path{fill:#f2a97a; stroke:#0b2545; stroke-width:1.6; stroke-linejoin:round;}
+  .wm.active svg.arrow path{fill:var(--accent);}
+  .wm .wm-label{background:rgba(255,255,255,.95); color:#0b2545; font:700 11px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    padding:2px 7px; border-radius:10px; border:1px solid rgba(0,0,0,.28); white-space:nowrap; margin-top:1px;}
+  .wm.active .wm-label{background:var(--accent); color:#fff; border-color:#fff;}
+  .wm .wm-id{font:600 9px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:#0b2545;
+    background:rgba(255,255,255,.8); padding:0 5px; border-radius:6px; margin-top:2px;}
+
+  /* buoy buttons (fallback if the map can't load; easier than tapping markers on a phone) */
+  .chips{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;}
+  .chips button{border:1px solid var(--line); background:transparent; color:var(--ink);
+    padding:5px 11px; border-radius:999px; font-size:0.82rem; cursor:pointer;}
+  .chips button.sel{background:var(--accent); border-color:var(--accent); color:#fff;}
 
   .panel{
     background:var(--panel); border-radius:14px; padding:20px 22px;
@@ -115,54 +123,12 @@
 
 <main>
   <div class="mapcard">
-    <svg viewBox="0 0 700 460" xmlns="http://www.w3.org/2000/svg" aria-label="Map of Santa Barbara Channel buoys">
-      <!-- mainland coastline (schematic) -->
-      <path class="landmass" d="M -10,-10 L 710,-10 L 710,70 C 600,55 520,95 440,75 C 360,55 300,95 230,80 C 150,65 70,100 -10,85 Z"/>
-      <text class="coast-label" x="330" y="45">Santa Barbara / Ventura coast</text>
-
-      <!-- islands (schematic ellipses) -->
-      <ellipse class="landmass" cx="138" cy="239" rx="46" ry="20" transform="rotate(-8 138 239)"/>
-      <text class="island-label" x="95" y="213">San Miguel Is.</text>
-
-      <ellipse class="landmass" cx="241" cy="277" rx="58" ry="24" transform="rotate(-6 241 277)"/>
-      <text class="island-label" x="200" y="248">Santa Rosa Is.</text>
-
-      <ellipse class="landmass" cx="343" cy="256" rx="78" ry="22" transform="rotate(-4 343 256)"/>
-      <text class="island-label" x="300" y="228">Santa Cruz Is.</text>
-
-      <ellipse class="landmass" cx="488" cy="256" rx="30" ry="12" transform="rotate(-3 488 256)"/>
-      <text class="island-label" x="455" y="235">Anacapa Is.</text>
-
-      <!-- rough crossing routes -->
-      <path class="route" d="M 367,110 L 304,150 L 343,256"/>
-      <path class="route" d="M 367,110 L 488,256"/>
-      <path class="route" d="M 93,110 L 93,149 L 138,239"/>
-
-      <!-- buoys -->
-      <g class="buoy active" data-id="46053" tabindex="0" role="button" aria-label="Buoy 46053">
-        <circle class="ring" cx="304" cy="150" r="10"/>
-        <circle class="dot" cx="304" cy="150" r="7"/>
-        <text x="314" y="146">46053</text>
-      </g>
-      <g class="buoy" data-id="46054" tabindex="0" role="button" aria-label="Buoy 46054">
-        <circle class="ring" cx="93" cy="149" r="10"/>
-        <circle class="dot" cx="93" cy="149" r="7"/>
-        <text x="48" y="140">46054</text>
-      </g>
-      <g class="buoy" data-id="46069" tabindex="0" role="button" aria-label="Buoy 46069">
-        <circle class="ring" cx="187" cy="398" r="10"/>
-        <circle class="dot" cx="187" cy="398" r="7"/>
-        <text x="197" y="415">46069</text>
-      </g>
-      <g class="buoy" data-id="46025" tabindex="0" role="button" aria-label="Buoy 46025">
-        <circle class="ring" cx="596" cy="366" r="10"/>
-        <circle class="dot" cx="596" cy="366" r="7"/>
-        <text x="548" y="383">46025</text>
-      </g>
-    </svg>
+    <div id="map" role="region" aria-label="Map of Santa Barbara Channel buoys with predicted wind"></div>
+    <div class="map-caption">Each arrow is that buoy's predicted <strong>average wind</strong> for the day selected on the right. It points the way the wind is blowing, and the label reads wind-from direction and knots. Click a buoy for its hourly chart.</div>
   </div>
 
   <div class="panel">
+    <div class="chips" id="chips"></div>
     <h2 id="loc-name">—</h2>
     <p class="loc-desc" id="loc-desc">—</p>
 
@@ -191,6 +157,8 @@
   </div>
 </main>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const DISPLAY_NAME = {
   gfs_seamless:"GFS", ecmwf_ifs025:"ECMWF", icon_seamless:"ICON",
@@ -260,6 +228,106 @@ function renderTodayChart(live){
   document.getElementById("today-chart").innerHTML = svg;
 }
 
+
+// ---------------------------------------------------------------- map
+const BUOY_POS = {
+  "46053": [34.262, -119.879],
+  "46054": [34.265, -120.477],
+  "46069": [33.674, -120.212],
+  "46025": [33.749, -119.053],
+};
+const COMPASS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+const compass = deg => COMPASS[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
+
+// Average wind for one buoy/lead: speeds averaged normally, direction by VECTOR
+// average (so 350 deg and 10 deg average to north, not south).
+function daySummary(live){
+  let su = 0, sv = 0, ss = 0, n = 0;
+  (live.speed_kts || []).forEach((s, i) => {
+    const d = (live.dir_from_deg || [])[i];
+    if(Number.isFinite(s) && Number.isFinite(d)){
+      const r = d * Math.PI / 180;
+      su += -s * Math.sin(r); sv += -s * Math.cos(r); ss += s; n++;
+    }
+  });
+  if(!n) return null;
+  const from = (Math.atan2(-su, -sv) * 180 / Math.PI + 360) % 360;
+  return { kts: ss / n, from };
+}
+
+let map = null;
+const markers = {};
+
+function makeIcon(id){
+  const live = TODAYS && TODAYS[id] && TODAYS[id][currentLead];
+  const sum = live ? daySummary(live) : null;
+  const active = id === currentId ? "active" : "";
+  let arrow = "", label = "no data";
+  if(sum){
+    const toward = (sum.from + 180) % 360;   // stored as "wind FROM"; arrow shows where it's blowing TO
+    arrow = `<svg class="arrow" viewBox="-20 -20 40 40" style="transform:rotate(${toward.toFixed(0)}deg)"><path d="M0,-17 L10,11 L0,5 L-10,11 Z"/></svg>`;
+    label = `${compass(sum.from)} ${Math.round(sum.kts)} kt`;
+  }
+  return L.divIcon({
+    className: "",
+    html: `<div class="wm ${active}">${arrow}<div class="wm-label">${label}</div><div class="wm-id">${id}</div></div>`,
+    iconSize: [76, 80], iconAnchor: [38, 19],
+  });
+}
+
+function initMap(){
+  if(typeof L === "undefined"){
+    document.getElementById("map").innerHTML =
+      '<p style="padding:24px;color:var(--muted)">The map library could not be loaded. Use the buoy buttons on the right instead.</p>';
+    return;
+  }
+  map = L.map("map", {
+    scrollWheelZoom: false,          // don't hijack page scrolling
+    dragging: !L.Browser.mobile,     // on phones, let a finger scroll the page
+    zoomSnap: 0.25,
+  });
+  const base = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(map);
+  const seamarks = L.tileLayer("https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png", {
+    maxZoom: 18, opacity: 0.9,
+    attribution: 'Sea marks: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors',
+  }).addTo(map);
+  L.control.layers(null, { "Sea marks (OpenSeaMap)": seamarks }, { collapsed: true }).addTo(map);
+
+  Object.entries(BUOY_POS).forEach(([id, pos]) => {
+    markers[id] = L.marker(pos, { icon: makeIcon(id), title: `Buoy ${id}`, riseOnHover: true })
+      .addTo(map)
+      .on("click", () => { currentId = id; render(); });
+  });
+  map.fitBounds([[33.45, -120.8], [34.5, -118.8]], { padding: [8, 8] });
+}
+
+function updateMarkers(){
+  if(!map) return;
+  Object.keys(markers).forEach(id => {
+    markers[id].setIcon(makeIcon(id));
+    markers[id].setZIndexOffset(id === currentId ? 1000 : 0);
+  });
+}
+
+function buildChips(){
+  const el = document.getElementById("chips");
+  el.innerHTML = "";
+  Object.keys(BUOY_POS).forEach(id => {
+    const b = document.createElement("button");
+    b.textContent = id;
+    b.dataset.id = id;
+    b.addEventListener("click", () => { currentId = id; render(); });
+    el.appendChild(b);
+  });
+}
+
+function updateChips(){
+  document.querySelectorAll("#chips button").forEach(b => b.classList.toggle("sel", b.dataset.id === currentId));
+}
+
 function render(){
   const d = DATA[currentId];
   document.getElementById("loc-name").textContent = d.name;
@@ -288,17 +356,9 @@ function render(){
     tbody.appendChild(tr);
   });
 
-  document.querySelectorAll(".buoy").forEach(b=>{
-    b.classList.toggle("active", b.dataset.id===currentId);
-  });
+  updateMarkers();
+  updateChips();
 }
-
-document.querySelectorAll(".buoy").forEach(b=>{
-  b.addEventListener("click", ()=>{ currentId = b.dataset.id; render(); });
-  b.addEventListener("keydown", e=>{
-    if(e.key==="Enter"||e.key===" "){ e.preventDefault(); currentId = b.dataset.id; render(); }
-  });
-});
 
 document.querySelectorAll(".lead-toggle button").forEach(btn=>{
   btn.addEventListener("click", ()=>{
@@ -316,12 +376,16 @@ async function boot(){
       fetch('data/latest.json'),
     ]);
     DATA = await backtestRes.json();
-    const live = await liveRes.json();
+    // Python can write a bare NaN for a missing hour, which isn't valid JSON and would
+    // break the whole page; read as text and turn those into nulls first.
+    const live = JSON.parse((await liveRes.text()).replace(/\bNaN\b/g, 'null'));
     // reshape {buoy: {label, "1":{...}, "2":{...}}} into {buoy: {1:{...},2:{...}}}
     TODAYS = {};
     for(const buoy in live){
       TODAYS[buoy] = { 1: live[buoy]["1"], 2: live[buoy]["2"] };
     }
+    buildChips();
+    initMap();
     render();
   }catch(e){
     document.querySelector("main").innerHTML =
