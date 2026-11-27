@@ -454,3 +454,11 @@
 {"generated_at": "2026-11-26T22:10:51.215588+00:00", "buoy": "46069", "lead_day": 2, "target_date": "2026-11-28", "avg_kts": 7.1, "dir_deg": 309.0}
 {"generated_at": "2026-11-26T22:10:51.948372+00:00", "buoy": "46025", "lead_day": 1, "target_date": "2026-11-27", "avg_kts": 5.2, "dir_deg": 323.0}
 {"generated_at": "2026-11-26T22:10:51.953333+00:00", "buoy": "46025", "lead_day": 2, "target_date": "2026-11-28", "avg_kts": 5.0, "dir_deg": 182.0}
+{"generated_at": "2026-11-27T21:51:14.060905+00:00", "buoy": "46053", "lead_day": 1, "target_date": "2026-11-28", "avg_kts": 6.7, "dir_deg": 146.0}
+{"generated_at": "2026-11-27T21:51:14.066794+00:00", "buoy": "46053", "lead_day": 2, "target_date": "2026-11-29", "avg_kts": 5.6, "dir_deg": 232.0}
+{"generated_at": "2026-11-27T21:51:14.547887+00:00", "buoy": "46054", "lead_day": 1, "target_date": "2026-11-28", "avg_kts": 8.0, "dir_deg": 22.0}
+{"generated_at": "2026-11-27T21:51:14.551097+00:00", "buoy": "46054", "lead_day": 2, "target_date": "2026-11-29", "avg_kts": 7.3, "dir_deg": 279.0}
+{"generated_at": "2026-11-27T21:51:14.878350+00:00", "buoy": "46069", "lead_day": 1, "target_date": "2026-11-28", "avg_kts": 6.8, "dir_deg": 308.0}
+{"generated_at": "2026-11-27T21:51:14.883725+00:00", "buoy": "46069", "lead_day": 2, "target_date": "2026-11-29", "avg_kts": 9.0, "dir_deg": 289.0}
+{"generated_at": "2026-11-27T21:51:15.274680+00:00", "buoy": "46025", "lead_day": 1, "target_date": "2026-11-28", "avg_kts": 4.8, "dir_deg": 154.0}
+{"generated_at": "2026-11-27T21:51:15.277946+00:00", "buoy": "46025", "lead_day": 2, "target_date": "2026-11-29", "avg_kts": 5.3, "dir_deg": 227.0}
